@@ -16,12 +16,13 @@ int main(int argc, char* argv[]) {
 
     size_t size_needed = MultiByteToWideChar(CP_UTF8, 0, argv[1], -1, nullptr, 0);
     wchar_t* path = new wchar_t[size_needed];
+	size_t len = wcslen(path);
+	if (len >= 2 && path[0] == L'"' && path[len-1] == L'"') {
+		path[len-1] = L'\0';
+		path++;
+	}
     MultiByteToWideChar(CP_UTF8, 0, argv[1], -1, path, size_needed);
     DWORD size = sizeof(path);
-    HKEY hKey;
-    RegOpenKeyExW(HKEY_CURRENT_USER, L"Control Panel\\Personalization\\Desktop Slideshow", 0, KEY_READ, &hKey);
-    RegQueryValueExW(hKey, L"ImagesRootPath", nullptr, nullptr, (BYTE*)path, &size);
-    RegCloseKey(hKey);
 
     CoInitialize(NULL);
     IDesktopWallpaper* dw = nullptr;
